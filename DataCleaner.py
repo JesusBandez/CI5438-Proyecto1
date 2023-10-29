@@ -1,3 +1,11 @@
+"""Aplica limpieza sobre el dataset:
+
+    - Elimina columnas innecesarias
+    - Elimina las filas con datos faltantes
+    - Formatea las columnas con strigns para obtener los datos numericos
+    - Normaliza las columnas numericas
+    - Convierte las variables categoricas en variables binarias dummies
+ """
 import pandas as pd
 import re
 class DataCleaner():
@@ -10,8 +18,7 @@ class DataCleaner():
         self._format_data()
         self._normalize_data()
         self._convert_categoric_to_dummies()
-        print(self._df)
-
+        
         return self._df
     
     def _filter_columns(self):
@@ -22,7 +29,7 @@ class DataCleaner():
             "Kilometer", "Fuel Type",
             "Transmission", "Owner", 
             "Engine", 
-            "Seating Capacity", "Fuel Tank Capacity"
+            "Seating Capacity", "Fuel Tank Capacity", "Price"
         ]
         # TODO:
         # No creo que numero de duenio valga la pena incluirlo,
