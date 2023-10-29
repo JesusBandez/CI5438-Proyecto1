@@ -59,13 +59,13 @@ if __name__ == "__main__":
     df = pd.read_csv("CleanedCarDekho.csv")
     Y = np.array(df["Price"])
     X = np.array(df.drop("Price",axis=1))
-    X_train, X_test, y_train, y_test = train_test_split(X, Y, train_size=0.7)
+    X_train, X_test, y_train, y_test = train_test_split(X, Y, train_size=0.8)
     trainer = Trainer()
-    hipotesis = trainer.gradient_descent(X, Y, 10000, 0.1, 0.001, False)
+    hipotesis = trainer.gradient_descent(X, Y, 100000, 0.01, 0.001, False)
     
     test = zip([int(trainer.predict(test)) for test in X_test], [real for real in y_test])
     for predicted, real in test:
-        print(f"prediccion: {predicted}, real: {real}")
+        print(f"real: {real}, prediccion: {predicted}")
 
 
     
