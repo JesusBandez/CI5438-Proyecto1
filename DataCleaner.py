@@ -7,20 +7,36 @@
     - Convierte las variables categoricas en variables binarias dummies
  """
 import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 import re
 class DataCleaner():
     def __init__(self, file_path) -> None:
-        self._df = pd.read_csv(file_path)
+        self._df = pd.read_csv(file_path)    
 
     def clean_dataset(self):
         self._filter_columns()
         self._treat_missing_data()
         self._format_data()
+        self._remove_atypical_data()
+
         self._normalize_data()
         self._convert_categoric_to_dummies()
-        
         return self._df
     
+    def _remove_atypical_data(self):
+        """Para cada columna, se filtran todos los datos atipicos
+        Se realiza un grafico de caja sobre cada columna para determinar
+            los datos atipicos
+        """
+        self._df = self._df.loc[self._df["Price"] <= 2200000]
+        self._df = self._df.loc[self._df["Year"] >= 2007]
+        self._df = self._df.loc[self._df["Engine"] <= 3000]
+        self._df = self._df.loc[self._df["Fuel Tank Capacity"] <= 85]
+        
+        plt.boxplot(self._df["Price"])
+        plt.show()
+
     def _filter_columns(self):
         """Quita del dataframe todas las columnas excepto las especificadas
          en la variable columns_to_keep"""
@@ -55,7 +71,7 @@ class DataCleaner():
         # Obtener el numero de cc del motor
         def format_engine(data):
             res = re.search("[0-9]+",data)
-            return res.group(0) if res else None
+            return int(res.group(0)) if res else None
         self._df["Engine"] = self._df["Engine"].map(format_engine)
         
     def _normalize_data(self):

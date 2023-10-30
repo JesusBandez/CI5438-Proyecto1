@@ -1,8 +1,8 @@
 """Entrena al modelo"""
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
+import os
 import random
 class Trainer:
     def __init__(self) -> None:
@@ -55,47 +55,40 @@ class Trainer:
 
 
 if __name__ == "__main__":
-    # Importar conjunto limpio
+    # Cargar el dataframe y dividirlo
     df = pd.read_csv("CleanedCarDekho.csv")
     Y = np.array(df["Price"])
     X = np.array(df.drop("Price",axis=1))
-    X_train, X_test, y_train, y_test = train_test_split(X, Y, train_size=0.8)
+
+    # Cargar los conjuntos de pruebas
+    file_names = ["X_train.csv", "X_test.csv", "y_train.csv", "y_test.csv"]
+    if not all([os.path.exists(os.path.join("train_data", file)) for file in file_names]):
+        # Si no existen, se generan nuevos (Necesitas sklearn instalado)
+        from sklearn.model_selection import train_test_split
+        X_train, X_test, y_train, y_test = train_test_split(X, Y, train_size=0.8)        
+        np.savetxt(os.path.join("train_data", "X_train.csv"), X_train, delimiter=",")
+        np.savetxt(os.path.join("train_data", "X_test.csv"), X_test, delimiter=",")
+        np.savetxt(os.path.join("train_data", "y_train.csv"), y_train, delimiter=",")
+        np.savetxt(os.path.join("train_data", "y_test.csv"), y_test, delimiter=",")
+    else:
+        X_train = np.genfromtxt(os.path.join("train_data","X_train.csv") , delimiter=",")
+        X_test = np.genfromtxt(os.path.join("train_data", "X_test.csv"), delimiter=",")
+        y_train = np.genfromtxt(os.path.join("train_data", "y_train.csv"), delimiter=",")
+        y_test = np.genfromtxt(os.path.join("train_data", "y_test.csv"), delimiter=",")
+
+    
+    # Conseguir la hipotesis
     trainer = Trainer()
     hipotesis = trainer.gradient_descent(X, Y, 100000, 0.01, 0.001, False)
     
-    test = zip([int(trainer.predict(test)) for test in X_test], [real for real in y_test])
-    for predicted, real in test:
+    # Probar la hipotesis
+    tests_results = list(zip([int(trainer.predict(test)) for test in X_test], [real for real in y_test]))
+    for predicted, real in tests_results:
         print(f"real: {real}, prediccion: {predicted}")
-
-
-    
-
-
-
-    
-    # Convertirlo en los arreglos X e Y
-    # Ejecutar el entrenamiento
-    # Probar la hipotesis conseguida
-
-
-    #     # Funcion prueba
-    # def f(x1,x2):
-    #     w0=2
-    #     w1=3
-    #     w2=5
-    #     return (w1*x1+w2*x2+w0)
-
-    # # Generar conjunto de pruebas
-    # X_=[]
-    # Y_=[]
-    # from random import gauss
-    # for x in range(1000):
-    #     x1=gauss(0,1)
-    #     x2=gauss(0,1)
-    #     X_.append([1,x1,x2])
-    #     Y_.append(f(x1,x2))
-
-    # X = np.array(X_)
-    # Y = np.array(Y_)
-    # trainer = Trainer()
-    # print(trainer.gradient_descent(X, Y, 100, 0.01, 0.001, True))
+        
+    # Calculo del error medio relativo
+    relative_errors = [abs(predicted-real)/real for predicted, real in tests_results]
+    ERM = sum(relative_errors)/len(tests_results)
+    print(f"Error relativo promedio: {ERM}")
+    print(f"Mayor error: {round(max(relative_errors), 4)}")
+    print(f"Menor error: {round(min(relative_errors), 4)}")
