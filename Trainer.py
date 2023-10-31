@@ -3,10 +3,12 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
+import math
 import random
 class Trainer:
     def __init__(self) -> None:
         self._hipotesis = None
+        self._W = []
 
     def gradient_descent(self, X:np.ndarray, Y:np.ndarray, 
             iterations:int, alpha:float, epsilon:float, 
@@ -21,7 +23,8 @@ class Trainer:
         X = np.column_stack((bias_term, X))
         
         m = np.shape(X)[0]
-        W = [1 for _ in range(len(X[0]))] #TODO: (Deberiamos usar random)[random.random() for _ in range(len(X[0]))]
+        #W = [1 for _ in range(len(X[0]))] #TODO: (Deberiamos usar random)[random.random() for _ in range(len(X[0]))]
+        W = np.append(1,self._W)
         iteration_error = []
         for _ in range(iterations):
             
@@ -79,16 +82,47 @@ if __name__ == "__main__":
     
     # Conseguir la hipotesis
     trainer = Trainer()
-    hipotesis = trainer.gradient_descent(X, Y, 100000, 0.01, 0.001, False)
+    trainer._W = X[0]
+    hipotesis = trainer.gradient_descent(X_train, y_train, 100000, 0.01, 0.001, False)
     
     # Probar la hipotesis
     tests_results = list(zip([int(trainer.predict(test)) for test in X_test], [real for real in y_test]))
     for predicted, real in tests_results:
         print(f"real: {real}, prediccion: {predicted}")
-        
+
     # Calculo del error medio relativo
+    
     relative_errors = [abs(predicted-real)/real for predicted, real in tests_results]
     ERM = sum(relative_errors)/len(tests_results)
     print(f"Error relativo promedio: {ERM}")
     print(f"Mayor error: {round(max(relative_errors), 4)}")
     print(f"Menor error: {round(min(relative_errors), 4)}")
+
+    #Mean Absolute Error (MAE)
+    count = 0
+    n = len(tests_results)
+    for predicted, real in tests_results:
+        count += abs(predicted-real)
+    print("MAE: ",count/n)
+
+    #Mean Squared Error (MSE)
+    count1 = 0
+    for predicted, real in tests_results:
+        count1 += (real-predicted)**2
+    print("MSE: ",(1/n)*count1)
+
+    #Root Mean Square Error (RMSE)
+    count2 = 0
+    for predicted, real in tests_results:
+        count2 += (predicted - real)**2
+    print("RMSD: ", math.sqrt(count2/n))
+
+    #Coefficient of determination
+    SSres = 0
+    SStot = 0 
+    average = sum(y_test)/len(y_test)
+    for predicted, real in tests_results:
+        SSres += (real - predicted)**2
+        SStot += (real - average)**2
+    print("Coeff: ",1-(SSres/SStot))
+    #R² (percentage of variance explained by model)
