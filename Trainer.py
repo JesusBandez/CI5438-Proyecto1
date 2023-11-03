@@ -34,6 +34,8 @@ class Trainer:
             iteration_error.append(max(abs(MSE)))
             W = W - (MSE*alpha)
             if max(abs(MSE))<epsilon:
+                print(max(abs(MSE)))
+                print("sale por aqui")
                 break
 
         self._hipotesis = W
@@ -42,8 +44,9 @@ class Trainer:
             plt.plot(list(range(0,len(iteration_error))), iteration_error)
             plt.xlabel('Iteracion') 
             plt.ylabel('Error en la iteracion') 
-            plt.title('Gráfico') 
-            plt.show()
+            plt.title("Curva de entrenamiento \n it={} alpha={} epsilon={}".format(iterations,alpha,epsilon))
+            plt.savefig("plots/trainer/plot_it={}_alpha={}_epsilon={}.jpg".format(iterations,alpha,epsilon), dpi=300)
+            plt.clf()
         return W
 
     def predict(self, data:np.ndarray):
@@ -83,8 +86,8 @@ if __name__ == "__main__":
     # Conseguir la hipotesis
     trainer = Trainer()
     trainer._W = X[0]
-    hipotesis = trainer.gradient_descent(X_train, y_train, 100000, 0.01, 0.001, False)
-    
+    hipotesis = trainer.gradient_descent(X_train, y_train, 100000, 0.268, 0.00001, True)
+
     # Probar la hipotesis
     tests_results = list(zip([int(trainer.predict(test)) for test in X_test], [real for real in y_test]))
     for predicted, real in tests_results:
@@ -98,25 +101,6 @@ if __name__ == "__main__":
     print(f"Mayor error: {round(max(relative_errors), 4)}")
     print(f"Menor error: {round(min(relative_errors), 4)}")
 
-    #Mean Absolute Error (MAE)
-    count = 0
-    n = len(tests_results)
-    for predicted, real in tests_results:
-        count += abs(predicted-real)
-    print("MAE: ",count/n)
-
-    #Mean Squared Error (MSE)
-    count1 = 0
-    for predicted, real in tests_results:
-        count1 += (real-predicted)**2
-    print("MSE: ",(1/n)*count1)
-
-    #Root Mean Square Error (RMSE)
-    count2 = 0
-    for predicted, real in tests_results:
-        count2 += (predicted - real)**2
-    print("RMSD: ", math.sqrt(count2/n))
-
     #Coefficient of determination
     SSres = 0
     SStot = 0 
@@ -125,4 +109,3 @@ if __name__ == "__main__":
         SSres += (real - predicted)**2
         SStot += (real - average)**2
     print("Coeff: ",1-(SSres/SStot))
-    #R² (percentage of variance explained by model)
