@@ -35,8 +35,11 @@ class DataCleaner():
         self._df = self._df.loc[self._df["Fuel Tank Capacity"] <= 85]
         
         # Aca utilizaba diagrama de cajas para conseguir los atipicos
-        #plt.boxplot(self._df["Price"])
-        #plt.show()
+        # plt.boxplot(self._df["Price"])
+        # plt.boxplot(self._df["Year"])
+        # plt.boxplot(self._df["Engine"])
+        # plt.boxplot(self._df["Fuel Tank Capacity"])
+        plt.show()
 
     def _filter_columns(self):
         """Quita del dataframe todas las columnas excepto las especificadas

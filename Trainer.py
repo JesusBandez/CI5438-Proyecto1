@@ -1,7 +1,7 @@
 """Entrena al modelo"""
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import os
 import math
 import random
@@ -22,8 +22,7 @@ class Trainer:
         bias_term = np.ones(len(X))
         X = np.column_stack((bias_term, X))
         
-        m = np.shape(X)[0]
-        #W = [1 for _ in range(len(X[0]))] #TODO: (Deberiamos usar random)[random.random() for _ in range(len(X[0]))]
+        m = np.shape(X)[0]        
         W = np.append(1,self._W)
         iteration_error = []
         for _ in range(iterations):
@@ -86,7 +85,7 @@ if __name__ == "__main__":
     # Conseguir la hipotesis
     trainer = Trainer()
     trainer._W = X[0]
-    hipotesis = trainer.gradient_descent(X_train, y_train, 100000, 0.268, 0.00001, True)
+    hipotesis = trainer.gradient_descent(X_train, y_train, 100000, 0.268, 0.00001)
 
     # Probar la hipotesis
     tests_results = list(zip([int(trainer.predict(test)) for test in X_test], [real for real in y_test]))
@@ -109,3 +108,5 @@ if __name__ == "__main__":
         SSres += (real - predicted)**2
         SStot += (real - average)**2
     print("Coeff: ",1-(SSres/SStot))
+
+    print(hipotesis)
