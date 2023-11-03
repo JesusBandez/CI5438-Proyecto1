@@ -45,7 +45,7 @@ class Trainer:
             plt.xlabel('Iteracion') 
             plt.ylabel('Error en la iteracion') 
             plt.title("Curva de entrenamiento \n it={} alpha={} epsilon={}".format(iterations,alpha,epsilon))
-            plt.savefig("plots/trainer/plot_it={}_alpha={}_epsilon={}.jpg".format(iterations,alpha,epsilon), dpi=300)
+            plt.savefig("plots/plot_it={}_alpha={}_epsilon={}.jpg".format(iterations,alpha,epsilon), dpi=300)
             plt.clf()
         return W
 
